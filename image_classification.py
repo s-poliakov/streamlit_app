@@ -6,11 +6,9 @@ from tensorflow.keras.applications import EfficientNetB0
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.applications.efficientnet import preprocess_input, decode_predictions
 
-
-@st.cache(allow_output_mutation=True)
+@st.cache_resource  # Используем st.cache_resource для модели
 def load_model():
     return EfficientNetB0(weights='imagenet')
-
 
 def preprocess_image(img):
     img = img.resize((224, 224))
@@ -18,7 +16,6 @@ def preprocess_image(img):
     x = np.expand_dims(x, axis=0)
     x = preprocess_input(x)
     return x
-
 
 def load_image():
     uploaded_file = st.file_uploader(label='Выберите изображение для распознавания')
@@ -29,15 +26,12 @@ def load_image():
     else:
         return None
 
-
 def print_predictions(preds):
     classes = decode_predictions(preds, top=3)[0]
     for cl in classes:
         st.write(cl[1], cl[2])
 
-
 model = load_model()
-
 
 st.title('Классификации изображений в облаке Streamlit')
 img = load_image()
